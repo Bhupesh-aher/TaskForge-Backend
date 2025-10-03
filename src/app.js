@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const authRoutes = require("./routes/authRoutes");
+const boardRoutes = require("./routes/boardRoutes");
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/boards", boardRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("TaskForge Backend is running");
