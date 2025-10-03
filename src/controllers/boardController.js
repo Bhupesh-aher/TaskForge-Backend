@@ -26,10 +26,15 @@ exports.getBoards = async (req, res) => {
 };
 
 // Get single Board with Lists
+// Get single Board with Lists
 exports.getBoardById = async (req, res) => {
   try {
-    const board = await Board.findById(req.params.id).populate("members", "name email");
-    if (!board) return res.status(404).json({ message: "Board not found" });
+    const board = await Board.findOne({
+      _id: req.params.id,
+      members: req.user._id
+    }).populate("members", "name email");
+
+    if (!board) return res.status(404).json({ message: "Board not found or access denied" });
 
     const lists = await List.find({ board: board._id }).sort("position");
     res.json({ board, lists });
@@ -37,3 +42,4 @@ exports.getBoardById = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
