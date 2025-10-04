@@ -2,6 +2,7 @@ const Board = require("../models/Board");
 const List = require("../models/List");
 const User = require("../models/User");
 const { logActivity } = require("./activityController");
+const { createNotification } = require("./notificationController");
 
 
 // Create Board
@@ -87,6 +88,16 @@ exports.addMember = async (req, res) => {
     // Add user to board members
     board.members.push(user._id);
     await board.save();
+
+    
+    await createNotification({
+      receiver: user._id,
+      sender: req.user._id,
+      board: board._id,
+      type: "board_invite",
+      message: `${req.user.name} added you to board "${board.title}"`,
+      io: req.app.get("io")
+    });
 
     res.json({ message: "Member added successfully", board });
   } catch (err) {

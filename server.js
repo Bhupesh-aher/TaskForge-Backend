@@ -29,6 +29,11 @@ io.on("connection", (socket) => {
     console.log(`🚪 User ${socket.id} left board ${boardId}`);
   });
 
+  socket.on("joinUser", (userId) => {
+    socket.join(userId);
+    console.log(`📫 User ${userId} joined personal room`);
+  });
+
   socket.on("disconnect", () => {
     console.log("❌ User disconnected:", socket.id);
   });

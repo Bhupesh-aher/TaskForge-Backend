@@ -9,6 +9,7 @@ const listRoutes = require("./routes/listRoutes");
 const cardRoutes = require("./routes/cardRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const activityRoutes = require("./routes/activityRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use("/api/lists", listRoutes);
 app.use("/api/cards", cardRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/activities", activityRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 
 app.get("/", (req, res) => {

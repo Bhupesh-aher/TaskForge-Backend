@@ -1,5 +1,6 @@
 const Card = require("../models/Card");
 const { logActivity } = require("./activityController");
+const { createNotification } = require("./notificationController");
 
 
 // Create Card
@@ -45,6 +46,13 @@ exports.updateCard = async (req, res) => {
       { new: true }
     );
 
+    if (!updatedCard) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    const io = req.app.get("io");
+
+    // ✅ Log the activity (you already had this)
     await logActivity({
       board: boardId,
       user: req.user._id,
@@ -52,16 +60,27 @@ exports.updateCard = async (req, res) => {
       targetType: "card",
       targetName: updatedCard.title,
       message: `${req.user.name} updated the card "${updatedCard.title}"`,
-      io: req.app.get("io")
+      io
     });
 
+    // ✅ NEW: Send notifications to assigned users (if any)
+    if (assignedTo && assignedTo.length > 0) {
+      for (const receiverId of assignedTo) {
+        // Avoid notifying the person who made the change (self-assignment)
+        if (receiverId.toString() === req.user._id.toString()) continue;
 
-    if (!updatedCard) {
-      return res.status(404).json({ message: "Card not found" });
+        await createNotification({
+          receiver: receiverId,
+          sender: req.user._id,
+          board: boardId,
+          type: "card_assignment",
+          message: `${req.user.name} assigned you to card "${updatedCard.title}"`,
+          io
+        });
+      }
     }
 
-    // Emit event to board room
-    const io = req.app.get("io");
+    // ✅ Emit update event to board members
     io.to(boardId).emit("cardUpdated", updatedCard);
 
     res.json(updatedCard);
@@ -69,6 +88,7 @@ exports.updateCard = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Delete Card
 exports.deleteCard = async (req, res) => {
