@@ -78,3 +78,28 @@ exports.getCardsByList = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Add or update card attachments manually (optional helper)
+exports.updateAttachments = async (req, res) => {
+  try {
+    const { attachments, boardId } = req.body; // Array of {url, fileName}
+
+    const card = await Card.findByIdAndUpdate(
+      req.params.id,
+      { attachments },
+      { new: true }
+    );
+
+    if (!card) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    // Emit socket event so others see updated attachments instantly
+    const io = req.app.get("io");
+    io.to(boardId).emit("cardUpdated", card);
+
+    res.json(card);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
