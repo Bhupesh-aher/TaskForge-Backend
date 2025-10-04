@@ -1,4 +1,6 @@
 const Card = require("../models/Card");
+const { logActivity } = require("./activityController");
+
 
 // Create Card
 exports.createCard = async (req, res) => {
@@ -10,6 +12,16 @@ exports.createCard = async (req, res) => {
       description,
       list,
       position
+    });
+
+    await logActivity({
+      board: boardId,
+      user: req.user._id,
+      action: "created",
+      targetType: "card",
+      targetName: title,
+      message: `${req.user.name} created a new card "${title}"`,
+      io: req.app.get("io")
     });
 
     // Emit event to board room
@@ -33,6 +45,17 @@ exports.updateCard = async (req, res) => {
       { new: true }
     );
 
+    await logActivity({
+      board: boardId,
+      user: req.user._id,
+      action: "updated",
+      targetType: "card",
+      targetName: updatedCard.title,
+      message: `${req.user.name} updated the card "${updatedCard.title}"`,
+      io: req.app.get("io")
+    });
+
+
     if (!updatedCard) {
       return res.status(404).json({ message: "Card not found" });
     }
@@ -53,6 +76,17 @@ exports.deleteCard = async (req, res) => {
     const { boardId } = req.body;
 
     const deletedCard = await Card.findByIdAndDelete(req.params.id);
+
+      await logActivity({
+        board: boardId,
+        user: req.user._id,
+        action: "deleted",
+        targetType: "card",
+        targetName: deletedCard.title,
+        message: `${req.user.name} deleted the card "${deletedCard.title}"`,
+        io: req.app.get("io")
+    });
+
 
     if (!deletedCard) {
       return res.status(404).json({ message: "Card not found" });

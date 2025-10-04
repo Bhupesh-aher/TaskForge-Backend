@@ -1,6 +1,8 @@
 const Board = require("../models/Board");
 const List = require("../models/List");
 const User = require("../models/User");
+const { logActivity } = require("./activityController");
+
 
 // Create Board
 exports.createBoard = async (req, res) => {
@@ -10,6 +12,18 @@ exports.createBoard = async (req, res) => {
       owner: req.user._id,
       members: [req.user._id]
     });
+
+    await logActivity({
+      board: board._id,
+      user: req.user._id,
+      action: "created",
+      targetType: "board",
+      targetName: board.title,
+      message: `${req.user.name} created a new board "${board.title}"`,
+      io: req.app.get("io")
+    });
+
+
     res.status(201).json(board);
   } catch (err) {
     res.status(500).json({ message: err.message });
