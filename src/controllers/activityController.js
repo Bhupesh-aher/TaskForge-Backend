@@ -14,12 +14,28 @@ exports.logActivity = async ({ board, user, action, targetType, targetName, mess
 // Get all activities for a board
 exports.getBoardActivities = async (req, res) => {
   try {
-    const activities = await Activity.find({ board: req.params.boardId })
-      .populate("user", "name email")
-      .sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = req.query.type || ""; // optional filter by action type
 
-    res.json(activities);
+    const query = { board: req.params.boardId };
+    if (filter) query.action = filter; // e.g., "created", "deleted"
+
+    const total = await Activity.countDocuments(query);
+    const activities = await Activity.find(query)
+      .populate("user", "name email")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      activities
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+

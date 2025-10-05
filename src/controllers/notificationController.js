@@ -17,14 +17,27 @@ exports.createNotification = async ({ receiver, sender, board, type, message, io
 // Get all notifications for a user
 exports.getUserNotifications = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const total = await Notification.countDocuments({ receiver: req.user._id });
     const notifications = await Notification.find({ receiver: req.user._id })
       .populate("sender", "name email")
-      .sort({ createdAt: -1 });
-    res.json(notifications);
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      notifications
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Mark as read
 exports.markAsRead = async (req, res) => {

@@ -31,15 +31,35 @@ exports.createBoard = async (req, res) => {
   }
 };
 
-// Get all Boards for user
+// Get all Boards for user  /api/boards?page=1&limit=10&search=keyword
 exports.getBoards = async (req, res) => {
   try {
-    const boards = await Board.find({ members: req.user._id });
-    res.json(boards);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || "";
+
+    const query = {
+      members: req.user._id,
+      title: { $regex: search, $options: "i" } // case-insensitive search
+    };
+
+    const totalBoards = await Board.countDocuments(query);
+    const boards = await Board.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      total: totalBoards,
+      page,
+      totalPages: Math.ceil(totalBoards / limit),
+      boards
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Get single Board with Lists
 // Get single Board with Lists
