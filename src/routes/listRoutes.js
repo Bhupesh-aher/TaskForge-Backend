@@ -1,9 +1,10 @@
 const express = require("express");
-const { createList, updateList, deleteList } = require("../controllers/listController");
+const { createList, updateList, deleteList , getListsByBoard} = require("../controllers/listController");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+router.get("/board/:boardId", protect, getListsByBoard); 
 router.post("/", protect, createList);       // Create new list
 router.put("/:id", protect, updateList);     // Update list title or position
 router.delete("/:id", protect, deleteList);  // Delete list

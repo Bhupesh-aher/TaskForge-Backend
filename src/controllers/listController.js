@@ -13,6 +13,9 @@ exports.createList = async (req, res) => {
       position
     });
 
+    const io = req.app.get("io");
+    io.to(board).emit("listCreated", list);
+
     await logActivity({
       board: list.board,
       user: req.user._id,
@@ -72,6 +75,16 @@ exports.deleteList = async (req, res) => {
     }
 
     res.json({ message: "List deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+exports.getListsByBoard = async (req, res) => {
+  try {
+    const lists = await List.find({ board: req.params.boardId });
+    res.json(lists);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

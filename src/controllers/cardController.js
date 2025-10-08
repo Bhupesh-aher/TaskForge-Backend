@@ -12,8 +12,13 @@ exports.createCard = async (req, res) => {
       title,
       description,
       list,
-      position
+      position,
     });
+
+    const io = req.app.get("io");
+
+    // Emit new card to all users in that board room
+    io.to(boardId).emit("cardCreated", { listId: list, card });
 
     await logActivity({
       board: boardId,
@@ -22,12 +27,8 @@ exports.createCard = async (req, res) => {
       targetType: "card",
       targetName: title,
       message: `${req.user.name} created a new card "${title}"`,
-      io: req.app.get("io")
+      io,
     });
-
-    // Emit event to board room
-    const io = req.app.get("io");
-    io.to(boardId).emit("cardCreated", card);
 
     res.status(201).json(card);
   } catch (err) {
