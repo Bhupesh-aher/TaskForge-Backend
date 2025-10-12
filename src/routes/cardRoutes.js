@@ -1,5 +1,5 @@
 const express = require("express");
-const { createCard, updateCard, deleteCard, getCardsByList, updateAttachments } = require("../controllers/cardController");
+const { createCard, updateCard, deleteCard, getCardsByList, updateAttachments, moveCard } = require("../controllers/cardController");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -60,5 +60,7 @@ router.put("/:id", protect, updateCard);            // Update card
 router.delete("/:id", protect, deleteCard);         // Delete card
 router.get("/list/:listId", protect, getCardsByList); // Get all cards in a list
 router.put("/:id/attachments", protect, updateAttachments);
+router.patch("/:id/move", moveCard);                    // Move card to another list
+
 
 module.exports = router;

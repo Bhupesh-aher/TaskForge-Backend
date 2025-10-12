@@ -16,17 +16,30 @@ const notificationRoutes = require("./routes/notificationRoutes");
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// ✅ 1️⃣ Apply CORS at very top
+app.use(
+  cors({
+    origin: "http://localhost:5173", // your frontend
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// ✅ 2️⃣ Handle preflight (OPTIONS) requests
+app.options("*", cors());
+
+// ✅ 3️⃣ Then JSON parsing
 app.use(express.json());
 
-// DB connection
+// ✅ 4️⃣ MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("DB connection error:", err));
 
+// ✅ 5️⃣ Swagger + Routes
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/boards", boardRoutes);
 app.use("/api/lists", listRoutes);
@@ -35,7 +48,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("TaskForge Backend is running");
 });

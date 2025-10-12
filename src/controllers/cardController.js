@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Card = require("../models/Card");
 const { logActivity } = require("./activityController");
 const { createNotification } = require("./notificationController");
@@ -158,3 +159,37 @@ exports.updateAttachments = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+
+// ✅ Move Card to another list (or reorder)
+exports.moveCard = async (req, res) => {
+  try {
+    const { destinationListId, position } = req.body;
+
+    // ✅ Convert string ID to ObjectId to ensure it matches schema type
+    const listObjectId = new mongoose.Types.ObjectId(destinationListId);
+
+    const card = await Card.findByIdAndUpdate(
+      req.params.id,
+      {
+        list: listObjectId,
+        position,
+      },
+      { new: true }
+    );
+
+    if (!card) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    console.log(`✅ Card ${card.title} moved to list ${destinationListId} at position ${position}`);
+
+    res.json(card);
+  } catch (error) {
+    console.error("❌ Error moving card:", error);
+    res.status(500).json({ message: "Failed to move card" });
+  }
+};
+
+
