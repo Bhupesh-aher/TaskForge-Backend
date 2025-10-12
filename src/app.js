@@ -17,10 +17,12 @@ dotenv.config();
 
 const app = express();
 
+const isProd = process.env.NODE_ENV === "production";
+
 // ✅ 1️⃣ Apply CORS at very top
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend
+    origin: isProd ? process.env.CLIENT_URL_PROD : process.env.CLIENT_URL_DEV, // your frontend
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -34,9 +36,9 @@ app.options("*", cors());
 app.use(express.json());
 
 // ✅ 4️⃣ MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("DB connection error:", err));
+mongoose.connect(isProd ? process.env.MONGO_URI_PROD : process.env.MONGO_URI_DEV)
+  .then(() => console.log(`✅ MongoDB connected to ${isProd ? "production" : "development"} database`))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ 5️⃣ Swagger + Routes
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
