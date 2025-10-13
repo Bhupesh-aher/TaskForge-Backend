@@ -41,14 +41,21 @@ It powers the frontend app by providing APIs for managing **boards, lists, cards
 ## 🧱 Project Architecture
 
 src/
-┣ controllers/ → Route logic (auth, boards, lists, cards, etc.)
-┣ models/ → MongoDB schemas (User, Board, Card, etc.)
-┣ routes/ → Express routes grouped by feature
-┣ middleware/ → JWT protection, error handling
-┣ utils/ → Helpers (Cloudinary, pagination)
-┣ config/ → Swagger config, DB connection
-┣ app.js → Core express configuration (CORS, routes)
-┗ server.js → Socket.io setup and server startup
+
+  - controllers/ → Route logic (auth, boards, lists, cards, etc.)
+  - models/ → MongoDB schemas (User, Board, Card, etc.)
+
+  - routes/ → Express routes grouped by feature
+
+  - middleware/ → JWT protection, error handling
+
+  - utils/ → Helpers (Cloudinary, pagination)
+
+  - config/ → Swagger config, DB connection
+
+  - app.js → Core express configuration (CORS, routes)
+
+  - server.js → Socket.io setup and server startup
 
 
 
