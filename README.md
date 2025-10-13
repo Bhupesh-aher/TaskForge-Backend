@@ -40,24 +40,19 @@ It powers the frontend app by providing APIs for managing **boards, lists, cards
 
 ## 🧱 Project Architecture
 
+```
+
 src/
+┣ controllers/     → Route logic (auth, boards, lists, cards, etc.)
+┣ models/          → MongoDB schemas (User, Board, Card, etc.)
+┣ routes/          → Express routes grouped by feature
+┣ middleware/      → JWT protection, error handling
+┣ utils/           → Helpers (Cloudinary, pagination)
+┣ config/          → Swagger config, DB connection
+┣ app.js           → Core express configuration (CORS, routes)
+┗ server.js        → Socket.io setup and server startup
 
-  - controllers/ → Route logic (auth, boards, lists, cards, etc.)
-  - models/ → MongoDB schemas (User, Board, Card, etc.)
-
-  - routes/ → Express routes grouped by feature
-
-  - middleware/ → JWT protection, error handling
-
-  - utils/ → Helpers (Cloudinary, pagination)
-
-  - config/ → Swagger config, DB connection
-
-  - app.js → Core express configuration (CORS, routes)
-
-  - server.js → Socket.io setup and server startup
-
-
+````
 
 ---
 
@@ -112,17 +107,19 @@ src/
 ```bash
 git clone https://github.com/Bhupesh-aher/TaskForge-Backend.git
 cd TaskForge-Backend
+````
 
+### 2️⃣ Install Dependencies
 
-2️⃣ Install Dependencies
-
-
+```bash
 npm install
+```
 
+### 3️⃣ Configure Environment Variables
 
+Create a `.env` file in the project root:
 
-3️⃣ Configure Environment Variables
-
+```env
 # Environment
 NODE_ENV=development
 PORT=5000
@@ -141,54 +138,60 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 # Client URLs
 CLIENT_URL_DEV=http://localhost:5173
-CLIENT_URL_PROD=https://task-forge.vercel.app
+CLIENT_URL_PROD=https://task-forge-frontend.vercel.app
+```
 
+---
 
-4️⃣ Run the App
+### 4️⃣ Run the App
 
-Development Mode
+#### Development Mode
 
-
+```bash
 npm run dev
+```
 
-Runs with NODE_ENV=development, connecting to local DB & frontend.
+> Runs with `NODE_ENV=development`, connecting to local DB & frontend.
 
-
-
-Production (Render)
+#### Production (Render)
 
 Render automatically sets:
 
-
+```bash
 NODE_ENV=production
+```
 
+> Connects to hosted DB and live frontend.
 
-Connects to hosted DB and live frontend.
+---
 
+## ☁️ Deployment
 
-☁️ Deployment
 | Service              | Description                  |
 | -------------------- | ---------------------------- |
-| **Backend Hosting**  |  Render 
-| **Frontend Hosting** |  Vercel |
+| **Backend Hosting**  | Render 
+| **Frontend Hosting** | Vercel 
 | **Database**         | MongoDB Atlas                |
 | **Media Storage**    | Cloudinary                   |
 
+---
 
+## 📘 Swagger API Docs
 
-📘 Swagger API Docs
+Access all endpoints directly at:
+👉 [https://taskforge-backend-jjdh.onrender.com/api/docs](https://taskforge-backend-jjdh.onrender.com/api/docs)
 
-Access all endpoints directly at:   By running the code in development mode
-👉 http://localhost:5173/api/docs
+---
 
+## 🧠 Developer Notes
 
+* Dynamic environment switching via `NODE_ENV`
+* CORS configured for both local and production
+* Socket.io integrated for real-time updates
+* Modular structure for easy scaling
 
-🧠 Developer Notes
+---
 
-Dynamic environment switching via NODE_ENV
+## 🏷️ License
 
-CORS configured for both local and production
-
-Socket.io integrated for real-time updates
-
-Modular structure for easy scaling
+MIT License © 2025 [Bhupesh Aher]
