@@ -109,10 +109,9 @@ cd TaskForge-Backend
 
 2️⃣ Install Dependencies
 
-```
+
 npm install
 
-```
 
 
 3️⃣ Configure Environment Variables
@@ -142,9 +141,9 @@ CLIENT_URL_PROD=https://task-forge.vercel.app
 
 Development Mode
 
-```
+
 npm run dev
-```
+
 Runs with NODE_ENV=development, connecting to local DB & frontend.
 
 
@@ -153,10 +152,10 @@ Production (Render)
 
 Render automatically sets:
 
-```
+
 NODE_ENV=production
 
-```
+
 Connects to hosted DB and live frontend.
 
 
